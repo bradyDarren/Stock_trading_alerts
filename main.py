@@ -10,16 +10,12 @@ url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=TSLA&
 r = requests.get(url)
 data = r.json()
 
-today = str(datetime.date.today()).split("-")
-yesterday = int(today[-1]) - 1
-today[-1] = (str(yesterday))
-c_yesterday = str("-".join(today))
-day_b4_yesterday = int(today[-1]) - 1
-today[-1] = (str(day_b4_yesterday))
-c_day_b4_yesterday = str("-".join(today))
+today = datetime.date.today()
+yesterday = str(today - datetime.timedelta(days=1))
+day_b4_yesterday = str(today - datetime.timedelta(days=2))
 
-print(data['Time Series (Daily)'][c_yesterday]['4. close'])
-print(data['Time Series (Daily)'][c_day_b4_yesterday]['4. close'])
+print(data['Time Series (Daily)'][yesterday]['4. close'])
+print(data['Time Series (Daily)'][day_b4_yesterday]['4. close'])
 
 ## STEP 2: Use https://newsapi.org
 # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
