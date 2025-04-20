@@ -1,12 +1,19 @@
 import requests
 import datetime
+import os
+from twilio.rest import Client
 
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
+AUTH_TOKEN = os.environ.get("TOKEN")
+ACCOUNT_SID = os.environ.get('SSID')
+PHONE_NUMBER = os.environ.get('PNUM')
+S_KEY = os.environ.get('STOCK_API')
+N_KEY = os.environ.get('NEWS')
 
 ## STEP 1: Use https://www.alphavantage.co
 # When STOCK price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
-url = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={STOCK}&apikey='
+url = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={STOCK}&apikey={S_KEY}'
 r = requests.get(url)
 data = r.json()
 
@@ -30,26 +37,37 @@ url_1 = (f'https://newsapi.org/v2/everything?'
        'q=Tesla&'
        'from=2025-04-17&'
        'sortBy=popularity&'
-       'apiKey=')
+       'apiKey={N_KEY}')
 
 response = requests.get(url_1)
 news = response.json()
-print(news)
 
-if per_change >= .05 or per_change <= -.05:
-    if per_change > .00: 
-        for a in range(3):
-            print(f'{STOCK}🔺{per_change}'
-                  f'Healine: {news['articles'][a]['title']}\n'
-                  f'Breif: {news['articles'][a]['description']}')
-    else: 
-         for a in range(3):
-            print(f'{STOCK}🔻{per_change}'
-                  f'Healine: {news['articles'][a]['title']}\n'
-                  f'Breif: {news['articles'][a]['description']}')
 ## STEP 3: Use https://www.twilio.com
 # Send a seperate message with the percentage change and each article's title and description to your phone number. 
+if per_change >= .05 or per_change <= -.05:
+    message_body = f"{STOCK} {'🔺' if per_change > 0 else '🔻'} {per_change:.2%}\n"
+    for a in range(3):
+        message_body += f'Headline: {news['articles'][a]['title']}\n'\
+            f'Brief: {news['articles'][a]['description']}\n'
 
+    client = Client(ACCOUNT_SID, AUTH_TOKEN)
+    message = client.messages.create(
+        body=f"{STOCK}🔺{per_change}\n"
+        from_=f'whatsapp:{PHONE_NUMBER}'
+        to='whatsapp:+14155238886'
+    )
+
+
+    #     print(f'{STOCK}🔺{per_change}\n') 
+    #     for a in range(3):
+    #         print(f'Headline: {news['articles'][a]['title']}\n'
+    #               f'Brief: {news['articles'][a]['description']}\n')
+    # else:
+    #      print(f'{STOCK}🔻{per_change}\n') 
+    #      for a in range(3):
+    #         print(f'Headline: {news['articles'][a]['title']}\n'
+    #               f'Brief: {news['articles'][a]['description']}\n')
+            
 
 #Optional: Format the SMS message like this: 
 """
