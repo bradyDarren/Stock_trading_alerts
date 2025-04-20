@@ -33,11 +33,11 @@ per_change = (yesterdays_close - day_b4_yesterday_close)/yesterdays_close
 
 ## STEP 2: Use https://newsapi.org
 # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME.
-url_1 = (f'https://newsapi.org/v2/everything?'
+url_1 = ('https://newsapi.org/v2/everything?'
        'q=Tesla&'
        'from=2025-04-17&'
        'sortBy=popularity&'
-       'apiKey={N_KEY}')
+       f'apiKey={N_KEY}')
 
 response = requests.get(url_1)
 news = response.json()
