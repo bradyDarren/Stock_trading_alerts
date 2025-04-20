@@ -52,10 +52,11 @@ if per_change >= .05 or per_change <= -.05:
 
     client = Client(ACCOUNT_SID, AUTH_TOKEN)
     message = client.messages.create(
-        body=f"{STOCK}🔺{per_change}\n"
-        from_=f'whatsapp:{PHONE_NUMBER}'
-        to='whatsapp:+14155238886'
+        body = message_body,
+        from_ = f'whatsapp:{PHONE_NUMBER}',
+        to = 'whatsapp:+14155238886',
     )
+    print(message_body.status)
 
 
     #     print(f'{STOCK}🔺{per_change}\n') 
