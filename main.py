@@ -5,11 +5,11 @@ from twilio.rest import Client
 
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
-AUTH_TOKEN = os.environ.get("TOKEN")
-ACCOUNT_SID = os.environ.get('SSID')
-PHONE_NUMBER = os.environ.get('PNUM')
-S_KEY = os.environ.get('STOCK_API')
-N_KEY = os.environ.get('NEWS')
+AUTH_TOKEN = ''
+ACCOUNT_SID = ''
+PHONE_NUMBER = ''
+S_KEY = ''
+N_KEY = ''
 
 ## STEP 1: Use https://www.alphavantage.co
 # When STOCK price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
@@ -52,11 +52,11 @@ if per_change >= .05 or per_change <= -.05:
 
     client = Client(ACCOUNT_SID, AUTH_TOKEN)
     message = client.messages.create(
-        body = message_body,
-        from_ = f'whatsapp:{PHONE_NUMBER}',
-        to = 'whatsapp:+14155238886',
+        body = message_body,    
+        from_ = 'whatsapp:+14155238886',
+        to = f'whatsapp:{PHONE_NUMBER}',
     )
-    print(message_body.status)
+    print(message.status)
 
 
     #     print(f'{STOCK}🔺{per_change}\n') 
