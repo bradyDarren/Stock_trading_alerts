@@ -1,10 +1,11 @@
 import requests
-import datetime
 import os
 from twilio.rest import Client
 
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
+STOCK_URL = 'https://www.alphavantage.co/query?'
+NEWS_URL = 'https://newsapi.org/v2/everything?'
 AUTH_TOKEN = os.environ.get('TWILIO_TOKEN')
 ACCOUNT_SID = os.environ.get('TWILIO_SID')
 PHONE_NUMBER = os.environ.get('PNUM')
@@ -13,51 +14,49 @@ N_KEY = os.environ.get('NEWS_KEY')
 
 ## STEP 1: Use https://www.alphavantage.co
 # When STOCK price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
-url = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={STOCK}&apikey={S_KEY}'
-r = requests.get(url)
-data = r.json()
+stock_params = {
+    'function':'TIME_SERIES_DAILY',
+    'symbol':STOCK,
+    'apikey':S_KEY
+}
+r = requests.get(url=STOCK_URL, params=stock_params)
+data = r.json()['Time Series (Daily)']
 
-# Obtain the dates for the 1 day from now and 2 days from now.
-today = datetime.date.today()
-yesterday = str('2025-04-17') # - testing lines
-day_b4_yesterday = str('2025-04-16') # - testing lines
-# yesterday = str(today - datetime.timedelta(days=1))
-# day_b4_yesterday = str(today - datetime.timedelta(days=2))
+data_list = [value for _, value in data.items()]
 
+yesterdays_close_price = data_list[0]['4. close']
+day_b4_yesterday_close_price = data_list[1]['4. close']
 
-# yesterdays_close = float(data['Time Series (Daily)'][yesterday]['4. close'])
-yesterdays_close = 200 # - testing lines
-day_b4_yesterday_close = float(data['Time Series (Daily)'][day_b4_yesterday]['4. close'])
-
-per_change = (yesterdays_close - day_b4_yesterday_close)/yesterdays_close
+per_change = (float(yesterdays_close_price) - float(day_b4_yesterday_close_price))/float(yesterdays_close_price)
 
 ## STEP 2: Use https://newsapi.org
 # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME.
-url_1 = ('https://newsapi.org/v2/everything?'
-       'q=Tesla&'
-       'from=2025-04-17&'
-       'sortBy=popularity&'
-       f'apiKey={N_KEY}')
-
-response = requests.get(url_1)
+news_params = {
+    'q':'Tesla',
+    'from':'2025-04-17',
+    'sortBy':'popularity',
+    'apiKey':N_KEY
+}
+response = requests.get(NEWS_URL,params=news_params)
 news = response.json()
 print(news)
 
+
 ## STEP 3: Use https://www.twilio.com
 # Send a seperate message with the percentage change and each article's title and description to your phone number. 
-if per_change >= .05 or per_change <= -.05:
-    message_body = f"{STOCK} {'🔺' if per_change > 0 else '🔻'} {per_change:.2%}\n"
-    for a in range(3):
-        message_body += f'Headline: {news['articles'][a]['title']}\n'\
-            f'Brief: {news['articles'][a]['description']}\n'
+# if per_change >= .05 or per_change <= -.05:
+#     message_body = f"{STOCK} {'🔺' if per_change > 0 else '🔻'} {per_change:.2%}\n"
+#     for a in range(3):
+#         message_body += f'Headline: {news['articles'][a]['title']}\n'\
+#             f'Brief: {news['articles'][a]['description']}\n'
 
-    client = Client(ACCOUNT_SID, AUTH_TOKEN)
-    message = client.messages.create(
-        body = message_body,    
-        from_ = 'whatsapp:+14155238886',
-        to = f'whatsapp:{PHONE_NUMBER}',
-    )
-    print(message.status)
+#     client = Client(ACCOUNT_SID, AUTH_TOKEN)
+#     message = client.messages.create(
+#         body = message_body,    
+#         from_ = 'whatsapp:+14155238886',
+#         to = f'whatsapp:{PHONE_NUMBER}',
+#     )
+#     print(message.status)
             
 
 #Optional: Format the SMS message like this: 
