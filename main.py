@@ -5,11 +5,11 @@ from twilio.rest import Client
 
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
-AUTH_TOKEN = ''
-ACCOUNT_SID = ''
-PHONE_NUMBER = ''
-S_KEY = ''
-N_KEY = ''
+AUTH_TOKEN = os.environ.get('TWILIO_TOKEN')
+ACCOUNT_SID = os.environ.get('TWILIO_SID')
+PHONE_NUMBER = os.environ.get('PNUM')
+S_KEY = os.environ.get('STOCK_KEY')
+N_KEY = os.environ.get('NEWS_KEY')
 
 ## STEP 1: Use https://www.alphavantage.co
 # When STOCK price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
@@ -41,6 +41,7 @@ url_1 = ('https://newsapi.org/v2/everything?'
 
 response = requests.get(url_1)
 news = response.json()
+print(news)
 
 ## STEP 3: Use https://www.twilio.com
 # Send a seperate message with the percentage change and each article's title and description to your phone number. 
@@ -57,17 +58,6 @@ if per_change >= .05 or per_change <= -.05:
         to = f'whatsapp:{PHONE_NUMBER}',
     )
     print(message.status)
-
-
-    #     print(f'{STOCK}🔺{per_change}\n') 
-    #     for a in range(3):
-    #         print(f'Headline: {news['articles'][a]['title']}\n'
-    #               f'Brief: {news['articles'][a]['description']}\n')
-    # else:
-    #      print(f'{STOCK}🔻{per_change}\n') 
-    #      for a in range(3):
-    #         print(f'Headline: {news['articles'][a]['title']}\n'
-    #               f'Brief: {news['articles'][a]['description']}\n')
             
 
 #Optional: Format the SMS message like this: 
