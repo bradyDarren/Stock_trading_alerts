@@ -9,6 +9,7 @@ NEWS_URL = 'https://newsapi.org/v2/everything?'
 AUTH_TOKEN = os.environ.get('TWILIO_TOKEN')
 ACCOUNT_SID = os.environ.get('TWILIO_SID')
 PHONE_NUMBER = os.environ.get('PNUM')
+WHATS_NUMBER = os.environ.get('WNUM')
 S_KEY = os.environ.get('STOCK_KEY')
 N_KEY = os.environ.get('NEWS_KEY')
 
@@ -42,22 +43,21 @@ news = response.json()
 print(news)
 
 
-## STEP 3: Use https://www.twilio.com
+# STEP 3: Use https://www.twilio.com
 # Send a seperate message with the percentage change and each article's title and description to your phone number. 
-# if per_change >= .05 or per_change <= -.05:
-#     message_body = f"{STOCK} {'🔺' if per_change > 0 else '🔻'} {per_change:.2%}\n"
-#     for a in range(3):
-#         message_body += f'Headline: {news['articles'][a]['title']}\n'\
-#             f'Brief: {news['articles'][a]['description']}\n'
+if per_change >= .05 or per_change <= -.05:
+    message_body = f"{STOCK} {'🔺' if per_change > 0 else '🔻'} {per_change:.2%}\n"
+    for a in range(3):
+        message_body += f'Headline: {news['articles'][a]['title']}\n'\
+            f'Brief: {news['articles'][a]['description']}\n'
 
-#     client = Client(ACCOUNT_SID, AUTH_TOKEN)
-#     message = client.messages.create(
-#         body = message_body,    
-#         from_ = 'whatsapp:+14155238886',
-#         to = f'whatsapp:{PHONE_NUMBER}',
-#     )
-#     print(message.status)
-            
+    client = Client(ACCOUNT_SID, AUTH_TOKEN)
+    message = client.messages.create(
+        body = message_body,    
+        from_ = f'whatsapp:{WHATS_NUMBER}',
+        to = f'whatsapp:{PHONE_NUMBER}',
+    )
+    print(message.status)
 
 #Optional: Format the SMS message like this: 
 """
